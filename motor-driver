@@ -1,0 +1,39 @@
+/*
+ *Demo for motor driver
+*/
+
+int motorPin1 = 3; // Initializes pin
+
+int state;
+int flag=0;        //makes sure that the serial only prints once the state
+ 
+void setup() {
+    // sets the pins as outputs:
+    pinMode(motorPin1, OUTPUT);
+    // initialize serial communication at 9600 bits per second:
+    Serial.begin(9600);
+}
+ 
+void loop() {
+    //if some date is sent, reads it and saves in state
+    if(Serial.available() > 0){     
+      state = Serial.read();   
+      flag=0;
+    }   
+    // if the state is '0' the pin will be shut off
+    if (state == '0') {
+        digitalWrite(motorPin1, LOW);
+        if(flag == 0){
+          Serial.println("Motor: off");
+          flag=1;
+        }
+    }
+    // if the state is '2' Send power to pin
+    else if (state == '2') {
+        digitalWrite(motorPin1, HIGH);
+        if(flag == 0){
+          Serial.println("Motor: left");
+          flag=1;
+        }
+    }
+}
