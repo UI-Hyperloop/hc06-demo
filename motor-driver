@@ -2,11 +2,12 @@
  *Demo for motor driver
 */
 
-int motorPin1 = 3; // Initializes pin
+int motorPin1 = 6; // Initializes pin
 
 int state;
 int flag=0;        //makes sure that the serial only prints once the state
- 
+int duty=0;
+
 void setup() {
     // sets the pins as outputs:
     pinMode(motorPin1, OUTPUT);
@@ -17,23 +18,45 @@ void setup() {
 void loop() {
     //if some date is sent, reads it and saves in state
     if(Serial.available() > 0){     
-      state = Serial.read();   
+      state = Serial.read();
+         
       flag=0;
     }   
-    // if the state is '0' the pin will be shut off
-    if (state == '0') {
-        digitalWrite(motorPin1, LOW);
-        if(flag == 0){
-          Serial.println("Motor: off");
+
+    if (flag == 0) {
+      switch (state) {
+        case 'n':
+          duty -= 15;
+          if (duty < 0) { 
+            duty = 0;
+          }
+          analogWrite(motorPin1, duty);
+          Serial.println(duty);
           flag=1;
-        }
-    }
-    // if the state is '2' Send power to pin
-    else if (state == '2') {
-        digitalWrite(motorPin1, HIGH);
-        if(flag == 0){
-          Serial.println("Motor: left");
+          break;
+        case 'm':
+          duty += 15;
+          if (duty > 255) { 
+            duty = 255;
+          }
+          analogWrite(motorPin1, duty);
+          Serial.println(duty);
           flag=1;
-        }
+          break;
+        case 'b':
+          duty = 255;
+          analogWrite(motorPin1, duty);
+          Serial.println(duty);
+          flag=1;
+          break;
+        case 'v':
+          duty = 0;
+          analogWrite(motorPin1, duty);
+          Serial.println(duty);
+          flag=1;
+          break;
+        default:
+          break;
+      }
     }
 }
